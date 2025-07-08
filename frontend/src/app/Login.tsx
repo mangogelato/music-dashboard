@@ -18,10 +18,8 @@ AUTH_URL.searchParams.append("scope", SCOPE)
 
 export default function Login() {
   return (
-    <a 
-      href={AUTH_URL.toString()}
-    >
-    Login to Spotify   
-    </a>
+    <Link href={AUTH_URL.toString()}>
+      Login to Spotify  
+    </Link>
   )
 }
