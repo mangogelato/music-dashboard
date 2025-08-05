@@ -1,12 +1,38 @@
-const { default: axios } = require("axios");
-const { error } = require("console");
 const express = require("express");
-const { json } = require("stream/consumers");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const { getAccessToken } = require("./helperFunctions");
+
 const app = express();
+app.use(cors());
+app.use(bodyParser.json());
 
 const REDIRECT_URI = "http://localhost:3000";
 
-app.get("/login", (req, res) => {
+app.post("/refresh", (req, res) => {
+  const refreshToken = req.body.refreshToken;
+
+  var authOptions = {
+    method: "post",
+    url: "https://accounts.spotify.com/api/token",
+    headers: {
+      "content-type": "application/x-www-form-urlencoded",
+      Authorization:
+        "Basic " +
+        new Buffer.from(client_id + ":" + client_secret).toString("base64"),
+    },
+    data: {
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    },
+    json: true,
+  };
+
+  getAccessToken(res, authOptions);
+});
+
+app.post("/login", (req, res) => {
+  //console.log(req.body);
   const code = req.body.code;
 
   const authOptions = {
@@ -21,23 +47,16 @@ app.get("/login", (req, res) => {
       "content-type": "application/x-www-form-urlencoded",
       Authorization:
         "Basic " +
-        new Buffer.from(client_id + ":" + client_secret).toString("base64"),
+        new Buffer.from(
+          process.env.SPOTIFY_API_CLIENT_ID +
+            ":" +
+            process.env.SPOTIFY_API_SECRET_ID
+        ).toString("base64"),
     },
     responseType: "json",
   };
 
-  axios(authOptions)
-    .then((response) => {
-      if (response.status == 200) {
-        res.json({
-          accessToken: response.data.access_token,
-          refreshToken: response.data.refreshToken,
-          expiresIn: response.data.expires_in,
-        });
-      }
-    })
-    .catch((error) => {
-      res.status(400);
-      console.log(error);
-    });
+  getAccessToken(res, authOptions);
 });
+
+app.listen(3001);
