@@ -32,7 +32,7 @@ app.post("/refresh", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  //console.log(req.body);
+  console.log(req.body.code);
   const code = req.body.code;
 
   const authOptions = {

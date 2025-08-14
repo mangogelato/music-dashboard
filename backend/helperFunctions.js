@@ -11,10 +11,12 @@ exports.getAccessToken = (res, authOptions) => {
           refreshToken: response.data.refreshToken || null,
           expiresIn: response.data.expires_in,
         });
+        console.log(`Success! Access Token: ${response.data.access_token}`);
       }
     })
     .catch((error) => {
-      console.log(`Input: ${error.config.data}`);
+      //console.log(`Input: ${error.config}`);
+      //console.log(error.config);
       console.log(error.response.data);
       res.sendStatus(400);
     });
