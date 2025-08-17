@@ -1,16 +1,12 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import authManager from './authManager'
+
+type DashboardProps = {
+  accessToken: string;
+};
 
 
-export default function Dashboard(code: any) {
-  const [accessToken, setAccessToken] = useState("")
-
-  //authManager(code)
-
-  useEffect(() => {
-    setAccessToken(sessionStorage.getItem("accessToken") || "")
-  },  [])
+export default function Dashboard({accessToken}: DashboardProps) {
 
   return (
     <div>{accessToken}</div>
