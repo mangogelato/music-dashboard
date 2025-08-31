@@ -6,7 +6,7 @@ const CLIENT_ID = "1080ed0f9ce54d028977b1e993c21bee"
 const RESPONSE_TYPE = "code"
 const REDIRECT_URI = "http://localhost:3000"
 //const STATE = (10000000000 + Math.random()*10000000000).toString(36)
-const SCOPE = "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-library-modify user-library-read"
+const SCOPE = "user-top-read user-read-private"
 const AUTH_URL = new URL("https://accounts.spotify.com/authorize")
 
 AUTH_URL.searchParams.append("client_id", CLIENT_ID)
