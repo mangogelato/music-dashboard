@@ -2,19 +2,16 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import Link from 'next/link';
-
-
-const SHORT = "short_term"
-const MEDIUM = "medium_term"
-const LONG = "long_term"
-
-const queryClient = new QueryClient()
-
 
 type DashboardProps = {
   accessToken: string;
 };
+
+enum timeRanges {
+  SHORT = "short_term",
+  MEDIUM = "medium_term",
+  LONG = "long_term"
+}
 
 type ArtistObject = {
   name: string,
@@ -48,65 +45,44 @@ type SongObject = {
   link: URL
 }
 
-function getTopTracks(time_range: string) {
-  const songs: Object[] = []
-  axios({
-    url: "/tracks",
-    params: {
-      limit: 50,
-      time_range: time_range
-    }
-  }).then((res) => {
-    const songArray = res.data.items
-    //console.log(artistsArray)
-    songArray.forEach((songRaw: any) => {
-      const songFormatted = {
-        name: songRaw["name"],
-        id: songRaw["id"],
-        album_name: songRaw["album"]["name"],
-        artist_names: 
-          songRaw["artists"].map((artist: any) => {
-            artist.name
-          }),
-        picture: songRaw["album"]["images"][0],
-        popularity: songRaw['popularity'],
-        release_date: songRaw["album"]["release_date"],
-        link: songRaw['external_urls']['spotify']
-      }
-      songs.push(songFormatted)
-    })
 
-  }).catch((err) => {
-    console.log(err)
-  })
-  return ""
+type ArtistObjectHolder = {
+  short_term: ArtistObject[],
+  medium_term: ArtistObject[],
+  long_term: ArtistObject[]
 }
 
-function getTopArtists(time_range: string){
-  const artistsArray: ArtistObject[] = []
-  return axios({
-    url: "/artists",
-    params: {
-      limit: 50,
-      time_range: time_range
-    }
-  })
+type SongObjectHolder = {
+  short_term: SongObject[],
+  medium_term: SongObject[],
+  long_term: SongObject[]
 }
-
 
 export default function Dashboard({accessToken}: DashboardProps) {
 
   axios.defaults.baseURL = "https://api.spotify.com/v1/me/top"
   axios.defaults.headers.common['Authorization'] = "Bearer " + accessToken
 
-  const [timeRange, setTimeRange] = useState(SHORT)
-  const [artists, setArtists] = useState<ArtistObject[]>([])
-  const [songs, setSongs] = useState<SongObject[]>([])
+  const [timeRange, setTimeRange] = useState(timeRanges.SHORT)
+  const [artists, setArtists] = useState<ArtistObjectHolder>({
+    short_term: [],
+    medium_term: [],
+    long_term: []
+  })
+  const [songs, setSongs] = useState<SongObjectHolder>({
+    short_term: [],
+    medium_term: [],
+    long_term: []
+  })
   const [isLoading, setIsLoading] = useState(true)
 
 
   const topArtists = () => {
     const artistsArray: ArtistObject[] = []
+
+    if (artists[timeRange].length > 0){
+      return;
+    }
     axios({
       url: "/artists",
       params: {
@@ -128,7 +104,18 @@ export default function Dashboard({accessToken}: DashboardProps) {
         }
         artistsArray.push(artistFormatted)        
       })
-      setArtists(artistsArray)
+      switch (timeRange){
+        case timeRanges.SHORT:
+          setArtists(artists => ({...artists, short_term: artistsArray}))
+          break;
+        case timeRanges.MEDIUM:
+          setArtists(artists => ({...artists, medium_term: artistsArray}))
+          break;
+        case timeRanges.LONG:
+          setArtists(artists => ({...artists, long_term: artistsArray}))
+          break;
+      }
+      //console.log(artistsArray)
     }).catch((err) => {
       console.log(err)
     })
@@ -136,6 +123,9 @@ export default function Dashboard({accessToken}: DashboardProps) {
 
   const topSongs = () => {
     const songsArray: SongObject[] = []
+    if (songs[timeRange].length > 0){
+      return;
+    }
     axios({
       url: "/tracks",
       params: {
@@ -146,8 +136,6 @@ export default function Dashboard({accessToken}: DashboardProps) {
       const result = res.data.items
       //console.log(artistsArray)
       //console.debug(result)
-      
-      
 
       result.forEach((songRaw: any) => {
         const artistsFormatted: {name: string, link: URL}[] = []
@@ -167,52 +155,93 @@ export default function Dashboard({accessToken}: DashboardProps) {
         
         songsArray.push(songFormatted)
       })
-      setSongs(songsArray)
-      console.debug(songsArray)
+      switch (timeRange){
+        case timeRanges.SHORT:
+          setSongs(songs => ({...songs, short_term: songsArray}))
+          break;
+        case timeRanges.MEDIUM:
+          setSongs(songs => ({...songs, medium_term: songsArray}))
+          break;
+        case timeRanges.LONG:
+          setSongs(songs => ({...songs, long_term: songsArray}))
+          break;
+      }
     }).catch((err) => {
       console.log(err)
     })
   }
 
   useEffect(() => {
+    setIsLoading(true)
     topArtists()
     topSongs()
     setIsLoading(false)
-    return(setArtists([]), setSongs([]))
-  }, [])
+    console.log(artists.short_term)
+    return(setArtists(artists), setSongs(songs))
+  }, [timeRange])
 
-    const artistToRow = artists.map((artist, index) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let choice = e.target.value
+    switch (choice) {
+      case timeRanges.SHORT:
+        setTimeRange(timeRanges.SHORT)
+        break;
+      case timeRanges.MEDIUM:
+        setTimeRange(timeRanges.MEDIUM)
+        break;
+      case timeRanges.LONG:
+        setTimeRange(timeRanges.LONG)
+        break;
+    }
+    console.log(choice, timeRange)
+  }
+
+
+
+  const artistToRow = artists[timeRange].map((artist, index) => {
     return(
 
       <li key={artist.id}>
-        <div className="flex flex-row items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%" >
+        <div className="flex items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%" >
           {index + 1}
-          <img src={artist.picture.url.toString()} height={'50em'} width={'50em'} />
+          <img className="h-25" src={artist.picture.url.toString()} />
           {artist.name}
         </div>
       </li>
-      // <tr key={artist.id}>
-      //   <td>
-      //     {artist["name"]}
-      //     <img src={artist.picture.url.toString()} height={50} width={50}/>
-      //   </td>
-      //   <td>{artist.genres.join(", ")}</td>
-      //   <td>{artist.popularity}</td>
-      // </tr>
     )
   })
 
-  const songToRow = songs.map((song, index) => {
+  const songToRow = songs[timeRange].map((song, index) => {
     return(
       <li key={song.id}>
-        <div className="flex flex-row items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%">
+        <div className="flex items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%">
           {index + 1}
-          <img src={song.picture.url.toString()} height={'50em'} width={'50em'} />
+          <img className="h-25" src={song.picture.url.toString()} />
           {song["name"] + " - " + song.artists.map((artist) => artist.name).join(", ")}
         </div>
       </li>
     )
   })
+
+  const timePeriodSelector = (
+    <fieldset className='text-center pb-20'>
+      <h1 className='p4'>Time Period</h1>
+      <div onChange={handleChange} className='flex flex-row justify-evenly justify-center items-center '>
+        <label htmlFor="short" className="checked flex justify-center items-center rounded rounded-xl ring-1 ring-gray-500 dark:has-checked:bg-blue-950 has-checked:bg-blue-200 hover:bg-gray-500 w-2/10 h-20">
+          <input type="radio" id="short" name="time-period" value={timeRanges.SHORT} defaultChecked className="sr-only" />
+          <span>Short (last 4 weeks)</span>
+        </label>
+        <label htmlFor="medium" className="flex justify-center items-center rounded rounded-xl ring-1 ring-gray-500 dark:has-checked:bg-blue-950 has-checked:bg-blue-200 hover:bg-gray-500 w-2/10 h-20">
+          <input type="radio" id="medium" name="time-period" value={timeRanges.MEDIUM} className="sr-only" />
+          <span>Medium (last 6 months)</span>
+        </label>
+        <label htmlFor="long" className="flex justify-center items-center rounded rounded-xl ring-1 ring-gray-500 dark:has-checked:bg-blue-950 has-checked:bg-blue-200 hover:bg-gray-500 w-2/10 h-20">
+          <input type="radio" id="long" name="time-period" value={timeRanges.LONG} className="sr-only" />
+          <span>Long (last year) </span>
+        </label>
+      </div>
+    </fieldset>
+  )
 
   const loadingScreen = (<div>Loading</div>)
   
@@ -222,16 +251,21 @@ export default function Dashboard({accessToken}: DashboardProps) {
 
   return (
     isLoading ? loadingScreen : (
-      <div className='flex flex-row justify-evenly w-9/10 border-8 border-red-100 self-center'>
-        <div>
-          <ol type="A">
-            {artistToRow}
-          </ol>
-        </div>
-        <div>
-          <ol type="A">
-            {songToRow}
-          </ol>
+      <div className='[&_h1]:text-3xl [&_h1]:p-10'>
+        {timePeriodSelector}
+        <div className='flex flex-row flex-wrap justify-evenly'>
+          <div className="w-150">
+            <h1 className='justify-self-center'>Artists</h1>
+            <ol type="A">
+              {artistToRow}
+            </ol>
+          </div>
+          <div className="w-150">
+            <h1 className='justify-self-center'>Tracks</h1>
+            <ol type="A">
+              {songToRow}
+            </ol>
+          </div>
         </div>
       </div>
     )
