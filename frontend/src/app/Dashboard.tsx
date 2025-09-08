@@ -76,7 +76,6 @@ export default function Dashboard({accessToken}: DashboardProps) {
   })
   const [isLoading, setIsLoading] = useState(true)
 
-
   const topArtists = () => {
     const artistsArray: ArtistObject[] = []
 
@@ -180,6 +179,11 @@ export default function Dashboard({accessToken}: DashboardProps) {
     return(setArtists(artists), setSongs(songs))
   }, [timeRange])
 
+  // Get rid of code in url
+  useEffect(() => {
+    window.history.replaceState({}, '', "/")
+  }, [])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let choice = e.target.value
     switch (choice) {
@@ -195,7 +199,6 @@ export default function Dashboard({accessToken}: DashboardProps) {
     }
     console.log(choice, timeRange)
   }
-
 
 
   const artistToRow = artists[timeRange].map((artist, index) => {
@@ -243,10 +246,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
     </fieldset>
   )
 
-  const loadingScreen = (<div>Loading</div>)
-  
-
-  
+  const loadingScreen = (<div>Loading</div>) 
 
 
   return (

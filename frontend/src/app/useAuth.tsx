@@ -6,8 +6,8 @@ import { access } from "fs"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 
-const LOGIN_LINK = "http://localhost:3001/login"
-const REFRESH_LINK = "http://localhost:3001/refresh"
+const LOGIN_LINK = process.env.NEXT_PUBLIC_BACKEND_DOMAIN + "/login"
+const REFRESH_LINK = process.env.NEXT_PUBLIC_BACKEND_DOMAIN + "/refresh"
 
 
 
