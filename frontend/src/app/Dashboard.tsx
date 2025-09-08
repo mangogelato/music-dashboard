@@ -204,7 +204,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
       <li key={artist.id}>
         <div className="flex items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%" >
           {index + 1}
-          <img className="h-25" src={artist.picture.url.toString()} />
+          <img className="h-25 rounded-xl" src={artist.picture.url.toString()} />
           {artist.name}
         </div>
       </li>
@@ -216,7 +216,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
       <li key={song.id}>
         <div className="flex items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%">
           {index + 1}
-          <img className="h-25" src={song.picture.url.toString()} />
+          <img className="h-25 rounded-xl" src={song.picture.url.toString()} />
           {song["name"] + " - " + song.artists.map((artist) => artist.name).join(", ")}
         </div>
       </li>
@@ -255,13 +255,13 @@ export default function Dashboard({accessToken}: DashboardProps) {
         {timePeriodSelector}
         <div className='flex flex-row flex-wrap justify-evenly'>
           <div className="w-150">
-            <h1 className='justify-self-center'>Artists</h1>
+            <h1 className='justify-self-center'>Top Artists</h1>
             <ol type="A">
               {artistToRow}
             </ol>
           </div>
           <div className="w-150">
-            <h1 className='justify-self-center'>Tracks</h1>
+            <h1 className='justify-self-center'>Top Tracks</h1>
             <ol type="A">
               {songToRow}
             </ol>

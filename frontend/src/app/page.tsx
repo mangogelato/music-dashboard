@@ -16,7 +16,11 @@ export default function Home() {
   const authCallbackCode = searchParams.get('code') || ''
   const accessToken = useAuth(authCallbackCode)
 
-  return ( accessToken ? <Dashboard accessToken={accessToken} /> : <Login />
+  return ( 
+    <div className="min-h-screen bg-gray-200 dark:bg-gray-950">
+      {accessToken ? <Dashboard accessToken={accessToken} /> : <Login />}
+    </div>
+    
     
   );
 }
