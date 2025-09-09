@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const REDIRECT_URI = "http://localhost:3000";
+const REDIRECT_URI = process.env.REDIRECT_URI;
 
 app.post("/refresh", (req, res) => {
   const refreshToken = req.body.refreshToken;
