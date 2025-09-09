@@ -2,12 +2,12 @@
 // Output: {Access Token, Refresh Token, Access Token expiry timer in seconds}
 
 import axios from "axios"
-import { access } from "fs"
-import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 
 const LOGIN_LINK = process.env.NEXT_PUBLIC_BACKEND_DOMAIN + "/login"
 const REFRESH_LINK = process.env.NEXT_PUBLIC_BACKEND_DOMAIN + "/refresh"
+
+
 
 
 
@@ -17,7 +17,7 @@ export default function useAuth(code: string) {
     const [refreshToken, setRefreshToken] = useState("")
     const [expiresIn, setExpiresIn] = useState(0)
 
-    function getAccessToken(code: string, link: string) {
+    function getAccessToken(link: string) {
         axios.post(link, {
             code: code,
         }).then((res) => {
@@ -28,11 +28,13 @@ export default function useAuth(code: string) {
             console.log(err)
         })
     }
+
+    
     
     // Initializing token
     useEffect(() => {
         if (!code) return
-        getAccessToken(code, LOGIN_LINK)
+        getAccessToken(LOGIN_LINK)
         console.log(accessToken)
     }, [code])
     
@@ -40,7 +42,7 @@ export default function useAuth(code: string) {
     useEffect(() => {
         if (!refreshToken || !expiresIn) return;
         const interval = setInterval(() => {
-            getAccessToken(code, REFRESH_LINK)
+            getAccessToken(REFRESH_LINK)
         }, (expiresIn - 60) * 1000)
 
         return () => clearInterval(interval)

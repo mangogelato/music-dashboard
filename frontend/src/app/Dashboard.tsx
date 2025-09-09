@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useState } from 'react'
@@ -76,101 +75,102 @@ export default function Dashboard({accessToken}: DashboardProps) {
   })
   const [isLoading, setIsLoading] = useState(true)
 
-  const topArtists = () => {
-    const artistsArray: ArtistObject[] = []
-
-    if (artists[timeRange].length > 0){
-      return;
-    }
-    axios({
-      url: "/artists",
-      params: {
-        limit: 50,
-        time_range: timeRange
-      }
-    }).then((res) => {
-      const result = res.data.items
-      //console.log(artistsArray)
-      result.forEach((artistRaw: any) => {
-        const artistFormatted: ArtistObject = {
-          name: artistRaw["name"],
-          id: artistRaw["id"],
-          picture: artistRaw["images"][0],
-          genres: artistRaw["genres"],
-          popularity: artistRaw['popularity'],
-          link: artistRaw['external_urls']['spotify'],
-          followers: artistRaw['followers']['total']
-        }
-        artistsArray.push(artistFormatted)        
-      })
-      switch (timeRange){
-        case timeRanges.SHORT:
-          setArtists(artists => ({...artists, short_term: artistsArray}))
-          break;
-        case timeRanges.MEDIUM:
-          setArtists(artists => ({...artists, medium_term: artistsArray}))
-          break;
-        case timeRanges.LONG:
-          setArtists(artists => ({...artists, long_term: artistsArray}))
-          break;
-      }
-      //console.log(artistsArray)
-    }).catch((err) => {
-      console.log(err)
-    })
-  }
-
-  const topSongs = () => {
-    const songsArray: SongObject[] = []
-    if (songs[timeRange].length > 0){
-      return;
-    }
-    axios({
-      url: "/tracks",
-      params: {
-        limit: 50,
-        time_range: timeRange
-      }
-    }).then((res) => {
-      const result = res.data.items
-      //console.log(artistsArray)
-      //console.debug(result)
-
-      result.forEach((songRaw: any) => {
-        const artistsFormatted: {name: string, link: URL}[] = []
-        const songFormatted = {
-          name: songRaw["name"],
-          id: songRaw["id"],
-          album_name: songRaw["album"]["name"],
-          artists: songRaw["artists"].map((songArtist: any) => new Object({
-            name: songArtist["name"],
-            link: songArtist["external_urls"]["spotify"]
-          })),
-          picture: songRaw["album"]["images"][0],
-          popularity: songRaw['popularity'],
-          release_date: songRaw["album"]["release_date"],
-          link: songRaw['external_urls']['spotify']
-        }
-        
-        songsArray.push(songFormatted)
-      })
-      switch (timeRange){
-        case timeRanges.SHORT:
-          setSongs(songs => ({...songs, short_term: songsArray}))
-          break;
-        case timeRanges.MEDIUM:
-          setSongs(songs => ({...songs, medium_term: songsArray}))
-          break;
-        case timeRanges.LONG:
-          setSongs(songs => ({...songs, long_term: songsArray}))
-          break;
-      }
-    }).catch((err) => {
-      console.log(err)
-    })
-  }
-
   useEffect(() => {
+    const topArtists = () => {
+      const artistsArray: ArtistObject[] = []
+
+      if (artists[timeRange].length > 0){
+        return;
+      }
+      axios({
+        url: "/artists",
+        params: {
+          limit: 50,
+          time_range: timeRange
+        }
+      }).then((res) => {
+        const result = res.data.items
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any 
+        result.forEach((artistRaw: any) => {
+          const artistFormatted: ArtistObject = {
+            name: artistRaw["name"],
+            id: artistRaw["id"],
+            picture: artistRaw["images"][0],
+            genres: artistRaw["genres"],
+            popularity: artistRaw['popularity'],
+            link: artistRaw['external_urls']['spotify'],
+            followers: artistRaw['followers']['total']
+          }
+          artistsArray.push(artistFormatted)        
+        })
+        switch (timeRange){
+          case timeRanges.SHORT:
+            setArtists(artists => ({...artists, short_term: artistsArray}))
+            break;
+          case timeRanges.MEDIUM:
+            setArtists(artists => ({...artists, medium_term: artistsArray}))
+            break;
+          case timeRanges.LONG:
+            setArtists(artists => ({...artists, long_term: artistsArray}))
+            break;
+        }
+        //console.log(artistsArray)
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
+
+    const topSongs = () => {
+      const songsArray: SongObject[] = []
+      if (songs[timeRange].length > 0){
+        return;
+      }
+      axios({
+        url: "/tracks",
+        params: {
+          limit: 50,
+          time_range: timeRange
+        }
+      }).then((res) => {
+        const result = res.data.items
+        //console.log(artistsArray)
+        //console.debug(result)
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        result.forEach((songRaw: any) => {
+          const songFormatted = {
+            name: songRaw["name"],
+            id: songRaw["id"],
+            album_name: songRaw["album"]["name"],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            artists: songRaw["artists"].map((songArtist: any) => new Object({
+              name: songArtist["name"],
+              link: songArtist["external_urls"]["spotify"]
+            })),
+            picture: songRaw["album"]["images"][0],
+            popularity: songRaw['popularity'],
+            release_date: songRaw["album"]["release_date"],
+            link: songRaw['external_urls']['spotify']
+          }
+          
+          songsArray.push(songFormatted)
+        })
+        switch (timeRange){
+          case timeRanges.SHORT:
+            setSongs(songs => ({...songs, short_term: songsArray}))
+            break;
+          case timeRanges.MEDIUM:
+            setSongs(songs => ({...songs, medium_term: songsArray}))
+            break;
+          case timeRanges.LONG:
+            setSongs(songs => ({...songs, long_term: songsArray}))
+            break;
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
+    
     setIsLoading(true)
     topArtists()
     topSongs()
@@ -185,7 +185,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
   }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let choice = e.target.value
+    const choice = e.target.value
     switch (choice) {
       case timeRanges.SHORT:
         setTimeRange(timeRanges.SHORT)
@@ -207,7 +207,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
       <li key={artist.id}>
         <div className="flex items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%" >
           {index + 1}
-          <img className="h-25 rounded-xl" src={artist.picture.url.toString()} />
+          <img className="h-25 rounded-xl" alt={"Profile image of artist " + artist.name} src={artist.picture.url.toString()} />
           {artist.name}
         </div>
       </li>
@@ -219,7 +219,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
       <li key={song.id}>
         <div className="flex items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%">
           {index + 1}
-          <img className="h-25 rounded-xl" src={song.picture.url.toString()} />
+          <img className="h-25 rounded-xl" alt={"Album image of song " + song.name} src={song.picture.url.toString()} />
           {song["name"] + " - " + song.artists.map((artist) => artist.name).join(", ")}
         </div>
       </li>
@@ -267,8 +267,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
             </ol>
           </div>
         </div>
-      </div>
+      </div>)
     )
-    
-  )
+
 }

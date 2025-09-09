@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fira_Code, Fira_Mono, Fira_Sans} from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 
 const firaCode = Fira_Code({
   variable: "--font-fira-code",
@@ -34,7 +35,9 @@ export default function RootLayout({
       <body
         className={`${firaCode.variable} ${firaMono.variable} ${firaSans.variable} font-mono`} 
       >
-        {children}
+        <Suspense>
+          {children}
+        </Suspense>
       </body>
     </html>
   );
