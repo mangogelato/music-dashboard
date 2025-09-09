@@ -17,7 +17,6 @@ exports.getAccessToken = (res, authOptions) => {
     })
     .catch((error) => {
       //console.log(`Input: ${JSON.stringify(error.config, "", " ")}`);
-      console.log(process.env.SPOTIFY_API_CLIENT_ID)
       //console.log(error.config);
       console.log(error.response.data);
       res.sendStatus(400);
