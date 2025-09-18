@@ -1,5 +1,5 @@
-// Input: code from Spotify API login callback
-// Output: {Access Token, Refresh Token, Access Token expiry timer in seconds}
+// Input: code from Spotify API login callback (string)
+// Output: Access Token (string)
 
 import axios from "axios"
 import { useState, useEffect } from "react"
@@ -35,7 +35,6 @@ export default function useAuth(code: string) {
     useEffect(() => {
         if (!code) return
         getAccessToken(LOGIN_LINK)
-        console.log(accessToken)
     }, [code])
     
     // Refreshing token on interval

@@ -18,7 +18,7 @@ exports.getAccessToken = (res, authOptions) => {
     .catch((error) => {
       //console.log(`Input: ${JSON.stringify(error.config, "", " ")}`);
       //console.log(error.config);
-      console.log(error.response.data);
+      console.log(`Error: ${error.response.data}`);
       res.sendStatus(400);
     });
 };

@@ -75,8 +75,10 @@ export default function Dashboard({accessToken}: DashboardProps) {
   })
   const [isLoading, setIsLoading] = useState(true)
 
+  // Load songs and artists then show page
   useEffect(() => {
     const topArtists = () => {
+      
       const artistsArray: ArtistObject[] = []
 
       if (artists[timeRange].length > 0){
@@ -114,7 +116,6 @@ export default function Dashboard({accessToken}: DashboardProps) {
             setArtists(artists => ({...artists, long_term: artistsArray}))
             break;
         }
-        //console.log(artistsArray)
       }).catch((err) => {
         console.log(err)
       })
@@ -133,8 +134,6 @@ export default function Dashboard({accessToken}: DashboardProps) {
         }
       }).then((res) => {
         const result = res.data.items
-        //console.log(artistsArray)
-        //console.debug(result)
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         result.forEach((songRaw: any) => {
@@ -175,7 +174,6 @@ export default function Dashboard({accessToken}: DashboardProps) {
     topArtists()
     topSongs()
     setIsLoading(false)
-    console.log(artists.short_term)
     return(setArtists(artists), setSongs(songs))
   }, [timeRange])
 
@@ -184,6 +182,8 @@ export default function Dashboard({accessToken}: DashboardProps) {
     window.history.replaceState({}, '', "/")
   }, [])
 
+
+  // Handles choosing time period for top artists/tracks
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const choice = e.target.value
     switch (choice) {
@@ -197,10 +197,9 @@ export default function Dashboard({accessToken}: DashboardProps) {
         setTimeRange(timeRanges.LONG)
         break;
     }
-    console.log(choice, timeRange)
   }
 
-
+  // Formatting of top artists
   const artistToRow = artists[timeRange].map((artist, index) => {
     return(
 
@@ -214,6 +213,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
     )
   })
 
+  // Formatting of top tracks
   const songToRow = songs[timeRange].map((song, index) => {
     return(
       <li key={song.id}>
@@ -226,6 +226,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
     )
   })
 
+  // Buttons to choose time period for top artists/tracks
   const timePeriodSelector = (
     <fieldset className='text-center pb-20'>
       <h1 className='p4'>Time Period</h1>
@@ -246,7 +247,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
     </fieldset>
   )
 
-  const loadingScreen = (<div>Loading</div>) 
+  const loadingScreen = (<div><h3>Loading...</h3></div>) 
 
 
   return (
