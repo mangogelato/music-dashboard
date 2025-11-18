@@ -1,6 +1,6 @@
 const { default: axios } = require("axios");
 const { error } = require("console");
-require('dotenv').config();
+require("dotenv").config();
 
 // Get access token from API
 exports.getAccessToken = (res, authOptions) => {
@@ -18,7 +18,7 @@ exports.getAccessToken = (res, authOptions) => {
     .catch((error) => {
       //console.log(`Input: ${JSON.stringify(error.config, "", " ")}`);
       //console.log(error.config);
-      console.log(`Error: ${error.response.data}`);
+      console.log(`Error: ${JSON.stringify(error.response.data)}`);
       res.sendStatus(400);
     });
 };

@@ -103,7 +103,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
             link: artistRaw['external_urls']['spotify'],
             followers: artistRaw['followers']['total']
           }
-          artistsArray.push(artistFormatted)        
+          if (artistFormatted.name){artistsArray.push(artistFormatted)}        
         })
         switch (timeRange){
           case timeRanges.SHORT:
@@ -151,9 +151,9 @@ export default function Dashboard({accessToken}: DashboardProps) {
             release_date: songRaw["album"]["release_date"],
             link: songRaw['external_urls']['spotify']
           }
-          
-          songsArray.push(songFormatted)
+          if (songFormatted.name){songsArray.push(songFormatted)}
         })
+        console.log(songsArray)
         switch (timeRange){
           case timeRanges.SHORT:
             setSongs(songs => ({...songs, short_term: songsArray}))
@@ -206,7 +206,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
       <li key={artist.id}>
         <div className="flex items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%" >
           {index + 1}
-          <img className="h-25 rounded-xl" alt={"Profile image of artist " + artist.name} src={artist.picture.url.toString()} />
+          <img className="h-25 rounded-xl" alt={"Profile image of artist " + artist.name} src={artist.picture ? artist.picture.url.toString() : "/missing-image.svg"}  />
           {artist.name}
         </div>
       </li>
@@ -219,7 +219,7 @@ export default function Dashboard({accessToken}: DashboardProps) {
       <li key={song.id}>
         <div className="flex items-center p-3 gap-3 bg-gradient-to-r hover:from-blue-400 hover:to-transparent to:80%">
           {index + 1}
-          <img className="h-25 rounded-xl" alt={"Album image of song " + song.name} src={song.picture.url.toString()} />
+          <img className="h-25 rounded-xl" alt={"Album image of song " + song.name} src={song.picture ? song.picture.url.toString() : "/missing-image.svg"} />
           {song["name"] + " - " + song.artists.map((artist) => artist.name).join(", ")}
         </div>
       </li>
